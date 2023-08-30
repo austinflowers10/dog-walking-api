@@ -249,12 +249,24 @@ app.MapGet("/api/dogs/{paramId}", (int paramId) =>
     }
 });
 
-app.MapPost("/api/dogs/", (Dog newDog) => 
+app.MapPost("/api/dogs", (Dog newDog) => 
 {
     //create a new Id
     newDog.Id = dogs.Count > 0 ? dogs.Max(d => d.Id) + 1 : 1;
     dogs.Add(newDog);
     return(newDog);
+});
+
+app.MapDelete("/api/dogs/{paramId}", (int paramId) => 
+{
+    Dog dogToDelete = dogs.FirstOrDefault(d => d.Id == paramId);
+    if (dogToDelete == null) 
+    {
+        return Results.NotFound();
+    }
+
+    dogs.Remove(dogToDelete);
+    return Results.Ok();
 });
 
 //City -------------------------------
