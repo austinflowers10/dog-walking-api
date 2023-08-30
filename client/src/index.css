@@ -11,3 +11,35 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Home page ------------------------------------------------*/
+/* .subtitle {
+    
+} */
+
+.dogs-list-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dogs-list-and-details-container {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    padding: 0;
+}
+
+.list-item {
+    margin: 10px 0;
+}
+
+button {
+    width: 150px;
+}
+/* ----------------------------------------------------------*/
