@@ -1,4 +1,4 @@
-import { getGreeting, getDogs, getCities } from "./apiManager";
+import { getGreeting, getDogs, getCities, deleteDog } from "./apiManager";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AddDogFormHtml } from "./AddDogForm";
@@ -41,6 +41,14 @@ export default function Home() {
                         : `Currently unassigned`
                     }
                     </p>
+                    <button className="button remove-dog-button"
+                        onClick={(event) => {
+                            deleteDog(chosenDog.id)
+                                .then(getDogs)
+                                .then(setDogs)
+                            setDogDetailsSection(null)
+                        }}
+                    >Remove Dog</button>
                 </section>
             )
         } else {
