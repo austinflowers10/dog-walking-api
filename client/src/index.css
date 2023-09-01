@@ -38,6 +38,11 @@ code {
 .list-item {
     margin: 10px 0;
 }
+.walker-detail-list {
+    width: 150px;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 button {
     width: 150px;
