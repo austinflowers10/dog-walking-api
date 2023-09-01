@@ -47,18 +47,18 @@ List <Walker> walkers = new List<Walker>
         Name = "Felicity Shagwell",
         Email = "felicityisawesome@groovy.com"
     },
-    new Walker()
-    {
-        Id = 4,
-        Name = "Foxxy Cleopatra",
-        Email = "foxxyisawesome@groovy.com"
-    },
-    new Walker()
-    {
-        Id = 6,
-        Name = "Mini-Me",
-        Email = "miniisawesome@groovy.com"
-    }
+    // new Walker()
+    // {
+    //     Id = 5,
+    //     Name = "Foxxy Cleopatra",
+    //     Email = "foxxyisawesome@groovy.com"
+    // },
+    // new Walker()
+    // {
+    //     Id = 6,
+    //     Name = "Mini-Me",
+    //     Email = "miniisawesome@groovy.com"
+    // }
 };
 
 List<Dog> dogs = new List<Dog>
@@ -89,14 +89,14 @@ List<Dog> dogs = new List<Dog>
         Id = 4,
         Name = "Mr. Biggleswoof",
         WalkerId = 2,
-        CityId = 4
+        CityId = 1
     },
     new Dog()
     {
         Id = 5,
         Name = "Cleo",
         WalkerId = 3,
-        CityId = 1
+        CityId = 4
     },
     new Dog()
     {
@@ -109,15 +109,15 @@ List<Dog> dogs = new List<Dog>
     {
         Id = 7,
         Name = "Fat Bow Wow",
-        WalkerId = 5,
+        WalkerId = 4,
         CityId = 3
     },
     new Dog()
     {
         Id = 8,
         Name = "Furry Farbissina",
-        WalkerId = 6,
-        CityId = 4
+        WalkerId = 3,
+        CityId = 3
     }
 };
 
@@ -151,43 +151,43 @@ List <WalkerCity> walkerCities = new List<WalkerCity>
     {Id = 1, WalkerId = 1, CityId = 1},
 
      new WalkerCity()
-    {Id = 1, WalkerId = 1, CityId = 2},
+    {Id = 2, WalkerId = 1, CityId = 2},
 
      new WalkerCity()
-    {Id = 1, WalkerId = 1, CityId = 3},
+    {Id = 3, WalkerId = 1, CityId = 3},
 
      new WalkerCity()
-    {Id = 1, WalkerId = 2, CityId = 1},
+    {Id = 4, WalkerId = 2, CityId = 1},
 
      new WalkerCity()
-    {Id = 1, WalkerId = 2, CityId = 2},
+    {Id = 5, WalkerId = 2, CityId = 2},
 
      new WalkerCity()
-    {Id = 1, WalkerId = 3, CityId = 3},
+    {Id = 6, WalkerId = 3, CityId = 3},
 
      new WalkerCity()
-    {Id = 1, WalkerId = 3, CityId = 4},
+    {Id = 7, WalkerId = 3, CityId = 4},
 
      new WalkerCity()
-    {Id = 1, WalkerId = 4, CityId = 2},
+    {Id = 8, WalkerId = 4, CityId = 2},
 
      new WalkerCity()
-    {Id = 1, WalkerId = 4, CityId = 3},
+    {Id = 9, WalkerId = 4, CityId = 3},
 
      new WalkerCity()
-    {Id = 1, WalkerId = 4, CityId = 4},
+    {Id = 10, WalkerId = 4, CityId = 4},
 
-     new WalkerCity()
-    {Id = 1, WalkerId = 5, CityId = 1},
+    //  new WalkerCity()
+    // {Id = 11, WalkerId = 5, CityId = 1},
 
-     new WalkerCity()
-    {Id = 1, WalkerId = 5, CityId = 2},
+    //  new WalkerCity()
+    // {Id = 12, WalkerId = 5, CityId = 2},
 
-     new WalkerCity()
-    {Id = 1, WalkerId = 5, CityId = 3},
+    //  new WalkerCity()
+    // {Id = 13, WalkerId = 5, CityId = 3},
 
-     new WalkerCity()
-    {Id = 1, WalkerId = 6, CityId = 4}
+    //  new WalkerCity()
+    // {Id = 14, WalkerId = 6, CityId = 4}
 
 };
 //End of Collections ---------------------------
