@@ -15,9 +15,6 @@ function App() {
               <NavLink href="/walkers">Walkers</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="/">Dogs</NavLink>
-            </NavItem>
-            <NavItem>
               <NavLink href="/cities">Cities</NavLink>
             </NavItem>
           </Nav>

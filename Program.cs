@@ -201,6 +201,14 @@ app.MapGet("/api/hello", () =>
 //Walker -----------------------------
 app.MapGet("/api/walkers", () => 
 {
+    //embed cities onto each walker
+    walkers.ForEach(walker => 
+    {
+        List<WalkerCity> walkerCitiesOfWalker = walkerCities.Where(wc => wc.WalkerId == walker.Id).ToList();
+        List<City> citiesOfWalker = walkerCitiesOfWalker.Select(wc => cities.First(c => c.Id == wc.CityId)).ToList();
+        walker.Cities = citiesOfWalker;
+    });
+
     return walkers;
 });
 
@@ -216,8 +224,46 @@ app.MapGet("/api/walkers/{paramId}", (int paramId) =>
     }
     else //if not null, return okay and return object
     {
+        //embed cities
+        List<WalkerCity> walkerCitiesOfWalker = walkerCities.Where(wc => wc.WalkerId == foundWalker.Id).ToList();
+        List<City> citiesOfWalker = walkerCitiesOfWalker.Select(wc => cities.First(c => c.Id == wc.CityId)).ToList();
+        foundWalker.Cities = citiesOfWalker;
+
         return Results.Ok(foundWalker);
     }
+});
+
+app.MapDelete("/api/walkers/{paramId}", (int paramId) => 
+{
+    Walker foundWalker = walkers.FirstOrDefault(w => w.Id == paramId);
+    if (foundWalker == null)
+    {
+        Results.NotFound();
+    }
+    List<Dog> dogsOfWalker = dogs.Where(d => d.WalkerId == foundWalker.Id).ToList();
+    dogsOfWalker.ForEach(d => d.WalkerId = null);
+
+    walkers.Remove(foundWalker);
+    return Results.Ok(walkers);
+});
+
+app.MapPut("/api/walkers/{paramId}", (int paramId, Walker walker) => 
+{
+    Walker walkerToUpdate = walkers.FirstOrDefault(w => w.Id == paramId);
+    
+    if (walkerToUpdate == null) 
+    {
+        return Results.NotFound();
+    }
+
+    if (paramId != walker.Id)
+    {
+        return Results.BadRequest();
+    }
+
+    int walkerIndex = walkers.IndexOf(walkerToUpdate);
+    walkers[walkerIndex] = walker;
+    return Results.Ok();
 });
 
 //Dog --------------------------------
@@ -255,6 +301,20 @@ app.MapPost("/api/dogs", (Dog newDog) =>
     newDog.Id = dogs.Count > 0 ? dogs.Max(d => d.Id) + 1 : 1;
     dogs.Add(newDog);
     return(newDog);
+});
+
+app.MapPut("/api/dogs/{paramId}", (int paramId, Dog dog) => 
+{
+    Dog dogToUpdate = dogs.FirstOrDefault(d => d.Id == paramId);
+    if (dogToUpdate == null)
+    {
+        return Results.NotFound();
+    }
+
+    int dogIndex = dogs.IndexOf(dogToUpdate);
+    dogs[dogIndex] = dog;
+    
+    return Results.Ok(); 
 });
 
 app.MapDelete("/api/dogs/{paramId}", (int paramId) => 
@@ -295,6 +355,31 @@ app.MapGet("/api/cities/{paramId}", (int paramId) =>
 app.MapGet("/api/walkercities", () => 
 {
     return walkerCities;
+});
+
+app.MapPut("/api/walkercities/{paramId}", (int paramId, Walker walker) => 
+{
+    WalkerCity walkerCityToUpdate = walkerCities.FirstOrDefault(wc => wc.Id == paramId);
+    if (walkerCityToUpdate == null) 
+    {
+        Results.NotFound();
+    }
+    
+    //if found, remove the current assigned cities
+    walkerCities = walkerCities.Where(wc => wc.WalkerId != walker.Id).ToList();
+
+    //Add in all selected cities as new joined objects
+    foreach (City city in walker.Cities)
+    {
+        WalkerCity newWalkerCity = new WalkerCity
+        {
+            WalkerId = walker.Id,
+            CityId = city.Id
+        };
+        newWalkerCity.Id = walkerCities.Count > 0 ? walkerCities.Max(wc => wc.Id) + 1 : 1;
+        walkerCities.Add(newWalkerCity);
+    }
+    return Results.Ok(walkerCities);
 });
 
 //End of Endpoints ------------------------------

@@ -1,4 +1,4 @@
-import { getWalkers, getDogs, getCities, getWalkerCities } from "./apiManager";
+import { getWalkers, getDogs, getCities, putWalkerCities, putWalker, putDog, deleteWalker } from "./apiManager";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -6,18 +6,17 @@ export default function Walkers() {
     const [walkers, setWalkers] = useState([])
     const [dogs, setDogs] = useState([])
     const [cities, setCities] = useState([])
-    const [walkerCities, setWalkerCities] = useState([])
     const [chosenWalker, setChosenWalker] = useState(null)
     const [walkerDetailsSection, setWalkerDetailsSection] = useState(null)
     const [walkerDogs, setWalkerDogs] = useState([])
-    const [walkerCityObjects, setWalkerCityObjects] = useState([])
     const [filteredWalkers, setFilteredWalkers] = useState([])
-    const [editCities, setEditCities] = useState(false)
-    const [editDogs, setEditDogs] = useState(false)
+    const [editWalker, setEditWalker] = useState(false)
+    const [addDog, setAddDog] = useState(false)
     const [walkerCitiesSection, setWalkerCitiesSection] = useState(null)
     const [selectedCities, setSelectedCities] = useState([])
     const [walkerDogsSection, setWalkerDogsSection] = useState(null)
-    const [selectedDogs, setSelectedDogs] = useState([])
+    const [walkerInfoSection, setWalkerInfoSection] = useState('')
+    const [assignedDogDetailsSection, setAssignedDogDetailsSection] = useState(null)
     
 
     useEffect(() => {
@@ -29,13 +28,9 @@ export default function Walkers() {
 
         getCities()
             .then(setCities)
-
-        getWalkerCities()
-            .then(setWalkerCities)
     },[]
     )
 
-    //Should only run once since walkers is never being modified
     useEffect(() => {
         if (walkers.length) {
             setFilteredWalkers(walkers)
@@ -45,23 +40,13 @@ export default function Walkers() {
 
     //Chosen Walker Use Effects -----------------------------
     useEffect(() => {
-        if (chosenWalker && walkerCities.length) {
-            const matchingWalkerCities = walkerCities.filter(walkerCity => {
-                return walkerCity.walkerId === chosenWalker.id
-            })
+        if (chosenWalker) {
+            setSelectedCities(chosenWalker.cities)
 
-            const matchingWalkerCityObjects = matchingWalkerCities.map(walkerCity => { 
-                return cities.find(city => city.id === walkerCity.cityId)
-            })
-
-            setWalkerCityObjects(matchingWalkerCityObjects)
-
-            setSelectedCities(matchingWalkerCityObjects)
-
-            setEditDogs(false)
-            setEditCities(false)
+            setAddDog(false)
+            setAssignedDogDetailsSection(null)
         }
-    }, [chosenWalker, walkerCities]
+    }, [chosenWalker]
     )
 
     useEffect(() => {
@@ -72,8 +57,6 @@ export default function Walkers() {
             })
 
             setWalkerDogs(matchingDogs)
-
-            setSelectedDogs(matchingDogs)
         }
     },[chosenWalker, dogs]
     )
@@ -82,8 +65,41 @@ export default function Walkers() {
 
     //Walker Cities Section Toggle
     useEffect(() => {
-        if (walkerCityObjects) {
-            if (editCities) {
+        if (chosenWalker && selectedCities.length) {
+            if (editWalker) {
+                setWalkerInfoSection(
+                    <>
+                    <div className="walker-name-input-container">
+                        <label htmlFor="name">Name:</label>
+                        <input className="walker-name-input"
+                            required
+                            placeholder="Walker Name"
+                            type="text"
+                            value={chosenWalker.name}
+                            onChange={(event) => {
+                                const copy = {...chosenWalker}
+                                copy.name = event.target.value
+                                setChosenWalker(copy)
+                            }}
+                        />
+                    </div>
+                    <div className="walker-email-input-container">
+                        <label htmlFor="email">Email:</label>
+                        <input className="walker-email-input"
+                            required
+                            placeholder="Walker Email"
+                            type="text"
+                            value={chosenWalker.email}
+                            onChange={(event) => {
+                                const copy = {...chosenWalker}
+                                copy.email = event.target.value
+                                setChosenWalker(copy)
+                            }}
+                        />
+                    </div>
+                    </>
+                )
+
                 setWalkerCitiesSection(
                     <div className="update-cities-container">
                         {
@@ -93,11 +109,13 @@ export default function Walkers() {
                                     <input className="city-checkbox"
                                         type="checkbox"
                                         value={city.id}
+                                        checked={selectedCities.find(selectedCity => selectedCity.id === city.id) ? true : false}
                                         onChange={(event) => {
+                                            console.log(event.target.checked)
                                             if (event.target.checked) {
                                                 setSelectedCities([...selectedCities, city])
                                             } else {
-                                                setSelectedCities(selectedCities.filter(city => city.id !== parseInt(event.target.value)))
+                                                setSelectedCities(selectedCities.filter(selectedCity => selectedCity.id !== city.id))
                                             }
                                         }}
                                     />
@@ -105,103 +123,163 @@ export default function Walkers() {
                                 </div>
                             })
                         }
-                        <button className="update-walker-cities-button"
-                            // onClick={handleUpdateWalkerCities}
-                        >Update Cities</button>
+                        <button className="update-walker-button"
+                            onClick={(event) => {
+                                event.preventDefault();
+                                handleUpdateWalker(chosenWalker, selectedCities)
+                            }}
+                        >Update Walker</button>
                     </div> 
                 )
             } else {
+                setWalkerInfoSection(
+                    <>
+                        <p className="walker-detail walker-name">{chosenWalker.name}</p>
+                        <p className="walker-detail walker-email">{chosenWalker.email}</p>
+                    </>
+                )
+
                 setWalkerCitiesSection(
-                    walkerCityObjects.map(cityObj => {
+                    chosenWalker.cities.map(cityObj => {
                         return <li key={`walkerCity--${cityObj.id}`} className="cities-per-walker-list-item">{cityObj.name}</li>
                     })
                 )
             }
         }
-    },[editCities, walkerCityObjects])
+    },[chosenWalker, editWalker, selectedCities])
+
+    //send walker and walker cities, and refresh state 
+    const handleUpdateWalker = (chosenWalker) => {   
+        const chosenWalkerCopy = {...chosenWalker} 
+        chosenWalkerCopy.cities = [...selectedCities]
+
+        putWalkerCities(chosenWalkerCopy.id, chosenWalkerCopy)
+
+        putWalker(chosenWalkerCopy.id, chosenWalkerCopy)
+            .then(getWalkers)
+            .then(setWalkers)
+        
+        setChosenWalker(null)
+
+    }
 
     //Walker Dogs Section Toggle
     useEffect(() => {
-        if (walkerDogs) {
-            if (editDogs) {
-                //filter dogs down to only those available in the same city
-                const sameCityDogs = dogs.filter(dog => dog.cityId === chosenWalker.cityId)
-                const availableSameCityDogs = sameCityDogs.filter(dog => !dog.walker)
-                const selectableDogsInWalkerCity = [...walkerDogs, availableSameCityDogs]
+        if (chosenWalker && walkerDogs) {
+            if (addDog) {
+                //filter dogs down to only those available in the walker's cities
+                const walkerCitiesDogs = dogs.filter(dog => {
+                    //loop over walker's cities to find the dog where it's cityId matches the city.id
+                    const dogInCity = chosenWalker.cities.find(city => city.id === dog.cityId)
+                    //if it matches, return the dog
+                    if (dogInCity && !dog.walkerId) {
+                        return dog
+                    }
+                })
 
                 setWalkerDogsSection(
-                    <div className="update-cities-container">
-                        {
-                            //return each dog name with checkbox
-                            selectableDogsInWalkerCity.map(dog => {
-                                return <div key={`selectableDog--${dog.id}`} className="selectable-dog">
-                                    <input className="dog-checkbox"
-                                        type="checkbox"
-                                        value={dog.id}
-                                        onChange={(event) => {
-                                            if (event.target.checked) {
-                                                setSelectedDogs([...selectedDogs, dog])
-                                            } else {
-                                                setSelectedDogs(selectedDogs.filter(dog => dog.id !== parseInt(event.target.value)))
-                                            }
-                                        }}
-                                    />
-                                    <p>{dog.name}</p>
-                                </div>
-                            }) 
-                        }
-                        <button className="update-walker-dogs-button"
-                            // onClick={handleUpdateWalkerDogs}
-                        >Update Dogs</button>
-                    </div>
+                    <>
+                        <p className="walker-detail dog-detail-dogs">Current Available Dogs:</p>
+                        <div className="update-cities-container">
+                            {
+                                walkerCitiesDogs.length 
+                                ?
+                                    //return each dog name with checkbox
+                                    walkerCitiesDogs.map(dog => {
+                                        return <Link key={`selectableDog--${dog.id}`} className="selectable-dog"
+                                            onClick={(event) => {
+                                                event.preventDefault()
+                                                handleAddDog(dog, chosenWalker)                                        
+                                            }}
+                                        >{dog.name}</Link>
+                                    }) 
+
+                                : <p>None</p>
+                            }
+                        </div>
+                    </>
                 )
             } else {
                 setWalkerDogsSection(
-                    walkerDogs.map(walkerDog => {
-                        return <li key={`walkerDog--${walkerDog.id}`} className="dogs-per-walker-list-item">{walkerDog.name}</li>
-                    })
+                    <>
+                        <p className="walker-detail dog-detail-dogs">Current Dogs Assigned:</p>
+                        <ul className="walker-detail-list dogs-per-walker-list"></ul>
+                        {
+                        walkerDogs.map(walkerDog => {
+                            return <li key={`walkerDog--${walkerDog.id}`} className="dogs-per-walker-list-item">{walkerDog.name}</li>
+                        })
+                        }
+                    </>
                 )
             }
         }
-    },[editDogs, walkerDogs]
+    },[chosenWalker, addDog, walkerDogs]
     )
+
+    //add dog and show details
+    const handleAddDog = (dog, chosenWalker) => {
+        const newDog = {...dog}
+        newDog.walkerId = chosenWalker.id
+
+        putDog(dog.id, newDog)
+            .then(getDogs)
+            .then(setDogs)
+
+        setAssignedDogDetailsSection(
+            <>
+                <p className="walker-detail dog-detail-dogs">New Assigned Dog:</p>
+                <div key={`dogDetails--${dog.id}`} className="dogDetails">
+                    <p>{dog.name}</p>
+                    <p>Lives in {dog.city.name}</p>
+                    <p>Currently Assigned to {chosenWalker.name}</p>
+                </div>
+            </>
+        )
+
+        setAddDog(false)
+    }
 
     //Entire Walker Details Refresher
     useEffect(() => {
         if (chosenWalker && walkerCitiesSection && walkerDogsSection) {
             setWalkerDetailsSection(
                 <section className="walker-details-section">
-                    <p className="walker-detail dog-detail-name">{chosenWalker.name}</p>
+                    <div className="walker-info-section">
+                        {walkerInfoSection}
+                    </div>
                     <p className="walker-detail dog-detail-city">Current Cities:</p>
                     <ul className="walker-detail-list cities-per-walker-list">
                         {walkerCitiesSection}
                     </ul>
-                    <p className="walker-detail dog-detail-dogs">Current Dogs Assigned:</p>
-                    <ul className="walker-detail-list dogs-per-walker-list">
+                    <section className="walker-dogs-section">
                         {walkerDogsSection}
-                    </ul>
+                    </section>
                 {/* Buttons Row */}
                     <div className="walker-buttons-row">
                         <button className="button remove-walker-button"
-                            // onClick={(event) => {
-                            //     deleteDog(chosenDog.id)
-                            //         .then(getDogs)
-                            //         .then(setDogs)
-                            //     setDogDetailsSection(null)
-                            // }}
+                            onClick={(event) => {
+                                event.preventDefault();
+                                setChosenWalker(null)
+                                deleteWalker(chosenWalker.id)
+                                    .then(getWalkers)
+                                    .then(setWalkers)
+                                    .then(getDogs)
+                                    .then(setDogs)
+                                
+                            }}
                         >Remove Walker</button>
                         <button className="button edit-walker-button"
                             onClick={event => {
-                                setEditCities(!editCities)
+                                setEditWalker(!editWalker)
                                 console.log("Edit Cities Clicked")
                             }}
-                        >Edit Cities</button>
+                        >Edit Walker</button>
                         <button className="button add-dog-button"
                             onClick={event => {
-                                setEditDogs(!editDogs)
+                                setAddDog(!addDog)
                                 console.log("Edit Dogs Clicked")
                             }}
-                        >Edit Dogs</button>
+                        >Add Dog</button>
                     </div>
                 </section>
             )
@@ -218,13 +296,13 @@ export default function Walkers() {
             <select className="walkers-filter-dropdown"
                 onChange={(event) => {
                     if (event.target.value) {
-                        const parsedEventValue = parseInt(event.target.value)
-                        const selectedCity = cities.find(city => city.id === parsedEventValue)
-                        const filteredWalkerCities = walkerCities.filter(joinedObj => joinedObj.cityId === selectedCity.id)
+                        const selectedCity = cities.find(city => city.id === parseInt(event.target.value))
+                        //filter walkers down to walkers that have selectedCity in walker.cities
                         const walkersByCity = walkers.filter(walker => {
-                            const foundWalker = filteredWalkerCities.find(joinedObj => joinedObj.walkerId === walker.id)
-                            if (foundWalker) {
-                                return walker
+                            const foundCity = walker.cities.find(city => city.name === selectedCity.name)
+
+                            if (foundCity) {
+                                return walker 
                             }
                         })
 
@@ -236,11 +314,11 @@ export default function Walkers() {
             >
                 <option value=''>Filter</option>
                 {
-                    cities.map(city => <option value={city.id}>{city.name}</option>)
+                    cities.map(city => <option key={`cityOption--${city.id}`} value={city.id}>{city.name}</option>)
                 } 
             </select>
             <div className="walker-list-and-details-container">
-                <ul className="list main-walker-list">
+                <div className="list main-walker-list">
                     {
                         //map out list of walker names as links
                         filteredWalkers.length
@@ -253,9 +331,12 @@ export default function Walkers() {
                         })
                         : ''
                     }
-                </ul>
+                </div>
                 {walkerDetailsSection}
             </div>
+        </section>
+        <section className="assigned-dog-details">
+            {assignedDogDetailsSection}
         </section>
     </div>
 }
