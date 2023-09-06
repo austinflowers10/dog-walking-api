@@ -47,4 +47,9 @@ code {
 button {
     width: 150px;
 }
+
+.update-cities-container {
+    display: flex;
+    flex-direction: column;
+}
 /* ----------------------------------------------------------*/

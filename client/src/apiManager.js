@@ -28,7 +28,6 @@ export const getWalkerCities = async () => {
 //End of GET
 
 //POST
-
 export const postNewDog = async (newDogObj) => {
     const res = await fetch("api/dogs", {
         method: "POST",
@@ -39,9 +38,54 @@ export const postNewDog = async (newDogObj) => {
     });
     return res.json()
 }
+//End of POST
 
 //DELETE
 
 export const deleteDog = async (dogId) => {
     return await fetch(`api/dogs/${dogId}`, { method: "DELETE" })
 }
+
+export const deleteWalker = async (walkerId) => {
+    return await fetch(`api/walkers/${walkerId}`, { method: "DELETE"})
+}
+
+//End of DELETE
+
+//PUT
+
+//update Dog to change assigned walker
+export const putDog = async(dogId, dogToSend) => {
+    return await fetch(`api/dogs/${dogId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify(dogToSend)
+    })
+}
+
+//update Walker 
+export const putWalker = async(walkerId, walkerToSend) => {
+    return await fetch(`api/walkers/${walkerId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify(walkerToSend)
+    })
+}
+
+//update WalkerCities to change where a walker walks 
+export const putWalkerCities = async(walkerId, walkerToSend) => {
+    return await fetch(`api/walkerCities/${walkerId}`,{
+        method: "PUT",
+        headers: {
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify(walkerToSend)
+    })
+}
+
+
+//End of PUT
