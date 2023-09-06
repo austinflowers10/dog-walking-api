@@ -290,7 +290,7 @@ export default function Walkers() {
     )
 
     return  <div className="walkers-container">
-        {/* No header needed */}
+        
         <section className="walkers-list-container">
             <p className="subtitle walkers-subtitle">Walkers</p>
             <select className="walkers-filter-dropdown"

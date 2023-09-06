@@ -238,7 +238,7 @@ app.MapDelete("/api/walkers/{paramId}", (int paramId) =>
     Walker foundWalker = walkers.FirstOrDefault(w => w.Id == paramId);
     if (foundWalker == null)
     {
-        Results.NotFound();
+        return Results.NotFound();
     }
     List<Dog> dogsOfWalker = dogs.Where(d => d.WalkerId == foundWalker.Id).ToList();
     dogsOfWalker.ForEach(d => d.WalkerId = null);
@@ -349,6 +349,13 @@ app.MapGet("/api/cities/{paramId}", (int paramId) =>
     {
         return Results.Ok(foundCity);
     }
+});
+
+app.MapPost("/api/cities/", (City city) => 
+{
+    city.Id = cities.Count > 0 ? cities.Max(c => c.Id) + 1 : 1;
+    cities.Add(city);
+    return Results.Ok(city);
 });
 
 //WalkerCity -------------------------

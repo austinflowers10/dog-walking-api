@@ -38,6 +38,17 @@ export const postNewDog = async (newDogObj) => {
     });
     return res.json()
 }
+
+export const postNewCity = async (newCityObj) => {
+    const res = await fetch("/api/cities", {
+        method: "POST",
+        headers: {
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify(newCityObj)
+    });
+    return res.json()
+}
 //End of POST
 
 //DELETE
