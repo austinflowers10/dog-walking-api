@@ -63,6 +63,7 @@ export const AddDogFormHtml = ({ citiesProp, setDogsProp, setDogFormSectionProp 
                 onClick={(event) => {
                     document.querySelector(".add-dog-button").style.visibility = "visible"
                     setDogFormSectionProp(null)
+                    document.querySelector(".dog-form-section").style.visibility = "hidden"  
                 }}
             >Cancel</button>
             <button className="button submit-new-dog" type="submit">Submit New Dog</button>

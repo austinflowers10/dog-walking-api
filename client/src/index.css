@@ -28,6 +28,13 @@ code {
     justify-content: space-evenly;
 }
 
+.dog-details-section {
+    display: block;
+}
+.dog-form-section {
+    visibility: hidden;
+}
+
 .list {
     display: flex;
     flex-direction: column;
